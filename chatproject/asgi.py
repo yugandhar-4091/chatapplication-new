@@ -8,13 +8,11 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'chatproject.settings')
 # Load Django before importing routing
 django_asgi_app = get_asgi_application()
 
-import chat.routing   # <-- Import AFTER Django setup
+import chat.routing  # Must be AFTER get_asgi_application()
 
 application = ProtocolTypeRouter({
     "http": django_asgi_app,
     "websocket": AuthMiddlewareStack(
-        URLRouter(
-            chat.routing.websocket_urlpatterns
-        )
+        URLRouter(chat.routing.websocket_urlpatterns)
     ),
 })
