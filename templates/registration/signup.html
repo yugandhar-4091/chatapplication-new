@@ -44,35 +44,37 @@
                 </div>
             {% endif %}
 
-            <form method="post" class="space-y-4">
-                {% csrf_token %}
+           <form method="post" class="space-y-4">
+    {% csrf_token %}
 
-                <div>
-                    <label class="block text-sm mb-1 text-slate-200">Username</label>
-                    <input type="text" name="username"
-                           class="w-full rounded-xl bg-black/40 border border-white/20 px-3 py-2 text-sm outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500 placeholder:text-slate-500"
-                           placeholder="Choose a username">
-                </div>
+    <div>
+        <label class="block text-sm mb-1 text-slate-200">Username</label>
+        <input type="text" name="username"
+               class="w-full rounded-xl bg-black/40 border border-white/20 px-3 py-2 text-sm outline-none"
+               placeholder="Choose a username" required>
+    </div>
 
-                <div>
-                    <label class="block text-sm mb-1 text-slate-200">Password</label>
-                    <input type="password" name="password1"
-                           class="w-full rounded-xl bg-black/40 border border-white/20 px-3 py-2 text-sm outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500 placeholder:text-slate-500"
-                           placeholder="Create a password">
-                </div>
+    <div>
+        <label class="block text-sm mb-1 text-slate-200">Password</label>
+        <input type="password" name="password1"
+               class="w-full rounded-xl bg-black/40 border border-white/20 px-3 py-2 text-sm outline-none"
+               placeholder="Create a password" required>
+    </div>
 
-                <div>
-                    <label class="block text-sm mb-1 text-slate-200">Confirm Password</label>
-                    <input type="password" name="password2"
-                           class="w-full rounded-xl bg-black/40 border border-white/20 px-3 py-2 text-sm outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500 placeholder:text-slate-500"
-                           placeholder="Repeat your password">
-                </div>
+    <div>
+        <label class="block text-sm mb-1 text-slate-200">Confirm Password</label>
+        <input type="password" name="password2"
+               class="w-full rounded-xl bg-black/40 border border-white/20 px-3 py-2 text-sm outline-none"
+               placeholder="Repeat your password" required>
+    </div>
 
-                <button type="submit"
-                        class="w-full mt-2 py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-violet-500 font-semibold text-sm shadow-lg hover:shadow-cyan-500/40">
-                    Create Account
-                </button>
-            </form>
+    <button type="submit"
+            class="w-full mt-2 py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-violet-500
+                   font-semibold text-sm shadow-lg hover:shadow-cyan-500/40">
+        Create Account
+    </button>
+</form>
+
 
             <p class="text-center text-xs text-slate-400 mt-5">
                 Already have an account?

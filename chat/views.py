@@ -5,7 +5,9 @@ from django.contrib.auth import login
 from .models import ChatRoom, Message
 
 
+@login_required
 def room_list(request):
+
     rooms = ChatRoom.objects.all().order_by("name")
     return render(request, "chat/room_list.html", {"rooms": rooms})
 
@@ -40,12 +42,13 @@ def room_view(request, room_name):
 
 
 def signup_view(request):
-    if request.method == "POST":
+    if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect("room_list")
+            user = form.save()   # Create the user
+            login(request, user) # Auto login the user
+            return redirect('room_list')  # Redirect anywhere (home/chat page)
     else:
         form = UserCreationForm()
-    return render(request, "registration/signup.html", {"form": form})
+
+    return render(request, 'registration/signup.html', {'form': form})

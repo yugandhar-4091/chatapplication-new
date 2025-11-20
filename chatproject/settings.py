@@ -146,8 +146,10 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels.layers.InMemoryChannelLayer"
     },
 }
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/login/'
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'room_list'
+LOGOUT_REDIRECT_URL = 'login'
+
 
 ASGI_APPLICATION = "chatproject.asgi.application"
 
