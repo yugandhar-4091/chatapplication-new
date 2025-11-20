@@ -31,6 +31,10 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     ".onrender.com",     # allows ALL render domains
 ]
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.onrender.com",
+]
+
 
 
 # Application definition
