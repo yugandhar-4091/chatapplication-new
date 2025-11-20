@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ room.name }} | TalkNest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-[#050816] via-[#020617] to-[#020617] text-white flex flex-col">
+
+<!-- NAVBAR -->
+<header class="w-full border-b border-white/10 bg-black/30 backdrop-blur-xl">
+    <nav class="max-w-6xl mx-auto flex items-center justify-between px-4 py-3">
+
+        <!-- Back Button + Logo -->
+        <div class="flex items-center gap-3">
+
+            <!-- BACK BUTTON -->
+            <button onclick="history.back()"
+                    class="w-9 h-9 rounded-xl bg-white/10 border border-white/20 
+                           flex items-center justify-center text-lg hover:bg-white/20 transition">
+                ←
+            </button>
+
+            <!-- LOGO + ROOM TITLE -->
+            <a href="{% url 'room_list' %}" class="flex items-center gap-2">
+                <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-cyan-400 to-violet-500 
+                            flex items-center justify-center shadow-lg shadow-cyan-500/40">
+                    <span class="text-xl font-black">T</span>
+                </div>
+                <div class="leading-5 hidden sm:block">
+                    <p class="font-extrabold text-lg tracking-wide">TalkNest</p>
+                    <p class="text-xs text-slate-400">Neon Chat</p>
+                </div>
+            </a>
+
+            <div class="hidden sm:flex flex-col">
+                <span class="text-xs uppercase text-slate-400">Active Room</span>
+                <span class="text-sm font-semibold text-cyan-300">#{{ room.name }}</span>
+            </div>
+
+        </div>
+
+        <!-- Right: Logout -->
+        <div class="flex items-center gap-3">
+            {% if user.is_authenticated %}
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button
+                        class="px-4 py-2 rounded-xl bg-gradient-to-r from-pink-500 to-red-500 
+                               text-sm font-semibold shadow-lg hover:shadow-pink-500/30 transition">
+                        Logout
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+
+    </nav>
+</header>
+
+<!-- MAIN -->
+<main class="flex-1 max-w-6xl mx-auto w-full flex flex-col md:flex-row gap-4 px-4 py-4">
+
+    <!-- SIDEBAR -->
+    <aside class="w-full md:w-60 bg-white/5 border border-white/10 rounded-2xl p-4 backdrop-blur-xl shadow-lg">
+        <span class="text-xs uppercase text-slate-400 block mb-3">Rooms</span>
+
+        <div class="space-y-2 max-h-72 overflow-y-auto pr-1 text-sm">
+            {% for r in rooms %}
+                <a href="{% url 'room' r.name %}"
+                   class="block px-3 py-2 rounded-xl border
+                   {% if r.name == room.name %}
+                       border-cyan-400/80 bg-cyan-500/10 text-cyan-200
+                   {% else %}
+                       border-white/10 bg-black/20 text-slate-200 hover:border-cyan-400/60 hover:bg-cyan-500/10
+                   {% endif %}
+                   transition">
+                    <span class="text-xs text-slate-400 mr-1">#</span>{{ r.name }}
+                </a>
+            {% endfor %}
+        </div>
+    </aside>
+
+    <!-- CHAT AREA -->
+    <section class="flex-1 flex flex-col bg-white/5 border border-white/10 rounded-2xl backdrop-blur-xl shadow-xl overflow-hidden">
+
+        <!-- Header -->
+        <div class="px-5 py-3 border-b border-white/10">
+            <p class="text-xs uppercase text-slate-400">Room</p>
+            <p class="text-lg font-semibold text-cyan-300">#{{ room.name }}</p>
+        </div>
+
+        <!-- Messages -->
+        <div id="messages" class="flex-1 px-4 py-4 space-y-3 overflow-y-auto">
+            {% for msg in messages %}
+                {% if msg.user == request.user %}
+                    <div class="flex justify-end">
+                        <div class="max-w-[75%] rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-3 shadow-lg text-black">
+                            <div class="text-xs font-semibold">You · {{ msg.created_at|date:"H:i" }}</div>
+                            <p class="text-sm break-words">{{ msg.text }}</p>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="flex justify-start">
+                        <div class="max-w-[75%] rounded-2xl bg-white/10 border border-white/15 px-4 py-3 shadow-md text-slate-100">
+                            <div class="text-xs font-semibold">{{ msg.user.username }} · {{ msg.created_at|date:"H:i" }}</div>
+                            <p class="text-sm break-words">{{ msg.text }}</p>
+                        </div>
+                    </div>
+                {% endif %}
+            {% empty %}
+                <p class="text-center text-slate-400 text-sm mt-4">No messages yet.</p>
+            {% endfor %}
+        </div>
+
+        <!-- INPUT BOX + EMOJI PICKER -->
+        <form method="POST" class="border-t border-white/10 bg-black/30 px-4 py-3 flex flex-col gap-2">
+            {% csrf_token %}
+
+            <!-- Emoji Button -->
+            <div>
+                <button type="button" id="emoji-toggle"
+                        class="w-9 h-9 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-xl">
+                    😊
+                </button>
+            </div>
+
+            <!-- Emoji Panel -->
+            <div id="emoji-panel"
+                 class="hidden bg-black/70 border border-white/20 rounded-xl px-3 py-2 flex flex-wrap gap-2 text-xl max-h-32 overflow-y-auto">
+            </div>
+
+            <!-- Input Row -->
+            <div class="flex gap-3 items-center mt-1">
+                <input
+                    id="message-input"
+                    name="message"
+                    type="text"
+                    autocomplete="off"
+                    placeholder="Type message..."
+                    class="flex-1 rounded-xl bg-black/40 border border-white/20 px-4 py-2 text-sm outline-none">
+
+                <button type="submit"
+                        class="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-400 to-violet-500 text-sm font-semibold shadow-lg">
+                    Send
+                </button>
+            </div>
+        </form>
+
+    </section>
+</main>
+
+<!-- JS: Emoji Picker -->
+<script>
+    const EMOJIS = [
+        "😀","😁","😂","🤣","😅","😉","😊","😍","😘","😎","🤩","🤔","🙃","🥳",
+        "😴","❤️","🔥","✨","👍","🙏","😇","😢","😡","👏","🤝","😋","🤗"
+    ];
+
+    const emojiPanel  = document.getElementById("emoji-panel");
+    const emojiToggle = document.getElementById("emoji-toggle");
+    const inputBox    = document.getElementById("message-input");
+
+    EMOJIS.forEach(e => {
+        const btn = document.createElement("button");
+        btn.textContent = e;
+        btn.type = "button";
+        btn.className = "emoji-btn hover:bg-white/20 px-1 rounded";
+        btn.addEventListener("click", () => {
+            inputBox.value += e;
+            inputBox.focus();
+        });
+        emojiPanel.appendChild(btn);
+    });
+
+    emojiToggle.addEventListener("click", () => {
+        emojiPanel.classList.toggle("hidden");
+    });
+</script>
+
+</body>
+</html>
